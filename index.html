@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Video Manual</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; }
+       .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+       .language-selector { margin-bottom: 20px; text-align: center; }
+       .language-selector button { padding: 10px 15px; margin: 5px; font-size: 16px; cursor: pointer; border: 1px solid #ccc; background-color: #e9e9e9; }
+       .language-selector button.active { background-color: #007bff; color: white; border-color: #007bff; }
+       .video-wrapper { position: relative; padding-bottom: 56.25%; /* 16:9 Aspect Ratio */ height: 0; }
+       .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Product Video Manual</h1>
+        <div class="language-selector">
+            <p>Please select your language:</p>
+            <button id="btn-en" onclick="switchLanguage('en')">English</button>
+            <button id="btn-de" onclick="switchLanguage('de')">Deutsch</button>
+            <button id="btn-es" onclick="switchLanguage('es')">Español</button>
+        </div>
+
+        <div class="video-wrapper">
+            <iframe
+                id="video-player"
+                src=""
+                style="border: none;"
+                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                allowfullscreen="true"
+            ></iframe>
+        </div>
+    </div>
+
+    <script>
+        // --- START: 请在这里配置您的视频信息 ---
+
+// 1. 将您在第3步获得的视频ID粘贴到这里
+const videoSources = {
+    'en': '844fb50077851e00a3f7e8b891043dbb', // 英语视频ID
+    'de': 'f256e6ea9341d51eea64c9454659e576', // 德语视频ID
+    'es': 'c84572c5e4ca0bc930c8c29396bc6cfd'  // 西班牙语视频ID
+};
+
+// 2. 设置一个默认语言，以防检测不到用户语言
+const defaultLanguage = 'en';
+
+// --- END: 配置结束 ---
+
+
+// 获取页面上的播放器元素
+const player = document.getElementById('video-player');
+
+// 更新按钮高亮状态的函数
+function updateActiveButton(lang) {
+    // 移除所有按钮的 'active' 样式
+    document.querySelectorAll('.language-selector button').forEach(button => {
+        button.classList.remove('active');
+    });
+    // 为当前语言的按钮添加 'active' 样式
+    const activeButton = document.getElementById(`btn-${lang}`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+}
+
+// 切换视频语言的函数
+function switchLanguage(lang) {
+    // 检查请求的语言是否存在于我们的视频源中
+    if (videoSources[lang]) {
+        const videoId = videoSources[lang];
+        // 更新 iframe 的 src 属性来加载新的视频 
+        player.src = `customer-3acnnd7caseegn6a.cloudflarestream.com`;
+        
+        // 将用户的选择保存到本地，以便下次访问时记住 [6]
+        localStorage.setItem('user_language_preference', lang);
+        
+        // 更新按钮高亮
+        updateActiveButton(lang);
+        console.log(`Switched to ${lang}`);
+    } else {
+        console.error(`Language '${lang}' not found in videoSources.`);
+    }
+}
+
+// 页面加载时执行的初始化函数
+document.addEventListener('DOMContentLoaded', function() {
+    // 检查用户之前是否手动选择过语言
+    let preferredLang = localStorage.getItem('user_language_preference');
+
+    if (!preferredLang) {
+        // 如果是首次访问，尝试检测浏览器语言 [7]
+        const browserLang = (navigator.language |
+
+| navigator.userLanguage).substring(0, 2);
+        // 如果浏览器语言在我们的支持列表里，就用它
+        if (videoSources[browserLang]) {
+            preferredLang = browserLang;
+        } else {
+            // 否则，使用默认语言
+            preferredLang = defaultLanguage;
+        }
+    }
+    
+    // 根据最终确定的语言，加载第一个视频
+    switchLanguage(preferredLang);
+});
+    </script>
+
+</body>
+</html>
